@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  web-client:
+    build:
+      context: ../../services/web-client
+      dockerfile: Dockerfile.dev
+    restart: always
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001/api/
+      - REACT_APP_SOCKET_URL=ws://localhost:3002/
+    volumes:
+      - "../../services/web-client:/app"
+    ports:
+      - "3000:3000"
+
+  server:
+    build:
+      context: ../../services/server
+      dockerfile: Dockerfile.dev
+    restart: always
+    environment:
+      - PORT=3002
+      - HTTP_PORT=3001
+      - CLIENT_ORIGIN=http://localhost:3000
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=default_blog
+      - POSTGRES_PASSWORD=123456Aa!
+      - POSTGRES_PORT=5432
+    volumes:
+      - ../../services/server:/app
+    ports:
+      - "3001:3001"
+      - "3002:3002"
+
+  postgres:
+    image: postgres:latest
+    container_name: default_blog_db
+    environment:
+      POSTGRES_HOST: localhost
+      POSTGRES_USER: postgres
+      POSTGRES_DB: default_blog
+      POSTGRES_PASSWORD: 123456Aa!
+      POSTGRES_PORT: 5432
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

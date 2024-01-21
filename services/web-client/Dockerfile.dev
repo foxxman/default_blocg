@@ -1,0 +1,9 @@
+FROM node:21.6.0-alpine
+
+WORKDIR /app
+ADD package.json yarn.lock ./
+RUN npm i nodemon ts-node -g
+RUN yarn
+ADD . /app
+
+ENTRYPOINT ["yarn", "start"]
